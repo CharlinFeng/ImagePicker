@@ -28,7 +28,6 @@ HMSingletonH(ImagePicker)
 
 @property (nonatomic,strong) UIImagePickerController *systemPickerVC;
 
-@property (nonatomic,strong) TZImagePickerController *qqImagePickerVC;
-
+@property (nonatomic,assign) NSInteger maxCount;
 
 @end

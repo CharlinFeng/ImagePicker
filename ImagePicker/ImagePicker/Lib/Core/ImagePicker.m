@@ -48,17 +48,6 @@ HMSingletonM(ImagePicker)
 }
 
 
--(TZImagePickerController *)qqImagePickerVC{
-    
-    if(_qqImagePickerVC == nil){
-        
-        _qqImagePickerVC = [[TZImagePickerController alloc] initWithMaxImagesCount:1 delegate:self];
-        _qqImagePickerVC.delegate = self;
-        _qqImagePickerVC.allowPickingOriginalPhoto = NO;
-        _qqImagePickerVC.allowPickingVideo = NO;
-    }
-    
-    return _qqImagePickerVC;
-}
+
 
 @end

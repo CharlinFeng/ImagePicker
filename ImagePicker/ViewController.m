@@ -16,6 +16,7 @@
 
 @end
 
+
 @implementation ViewController
 
 - (void)viewDidLoad {
@@ -25,22 +26,15 @@
 
 - (IBAction)btnClick:(id)sender {
     
-//    [ImagePicker show_Camera_SystemLibary_InVC:self isCameraFront:NO allowEdit:NO maxSize:CGSizeMake(600, 0) maxKB:200];
-    [ImagePicker show_QQImagePickerVC_InVC:self isCameraFront:YES allowEdit:NO maxCount:9 maxSize:CGSizeMake(600, 600) maxKB:200];
+//    [ImagePicker show_Camera_SystemLibary_InVC:self isCameraFront:YES allowEdit:YES maxSize:CGSizeMake(600, 0) maxKB:200];
+    [ImagePicker show_QQImagePickerVC_InVC:self isCameraFront:YES allowEdit:NO maxCount:9 maxSize:CGSizeMake(900, 0) maxKB:200];
 }
-
-
--(void)ImagePicker_isSourceTypeAvailable{
-
-    NSLog(@"设备不可用");
-}
-
 
 -(void)ImagePicker_didFinishPickerImages:(NSArray<UIImage *> *)images{
 
     UIImage *image = images.lastObject;
     
-    NSLog(@"分辨率:%@",NSStringFromCGSize(image.size));
+//    NSLog(@"分辨率:%@",NSStringFromCGSize(image.size));
     
     self.imageV.image = image;
 }

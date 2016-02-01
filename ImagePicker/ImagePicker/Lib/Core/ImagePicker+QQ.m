@@ -11,7 +11,7 @@
 #import "UIImage+Zip.h"
 #import "CoreSVP.h"
 
-@interface ImagePicker ()<TZImagePickerControllerDelegate>
+@interface ImagePicker ()<UINavigationControllerDelegate, TZImagePickerControllerDelegate>
 
 @end
 
@@ -29,7 +29,7 @@
     picker.isCameraFront = isCameraFront;
     picker.maxKB = maxKB;
     picker.maxSize = maxSize;
-    picker.qqImagePickerVC.maxImagesCount = maxCount;
+    picker.maxCount = maxCount;
     CoreAlertViewCommon(@selector(showWithIndex_QQ:))
 }
 
@@ -56,7 +56,12 @@
         
     }else {
     
-        pickerVC_T = self.qqImagePickerVC;
+        TZImagePickerController *pickerVC = [[TZImagePickerController alloc] initWithMaxImagesCount:1 delegate:self];
+        pickerVC.delegate = self;
+        pickerVC.maxImagesCount = self.maxCount;
+        pickerVC.allowPickingOriginalPhoto = NO;
+        pickerVC.allowPickingVideo = NO;
+        pickerVC_T = pickerVC;
     }
 
     [self.vc presentViewController:pickerVC_T animated:YES completion:nil];
