@@ -35,7 +35,7 @@
 
 -(void)showWithIndex_QQ:(NSNumber *)index{
 
-    __weak UIViewController *pickerVC_T = nil;
+    UIViewController *pickerVC_T = nil;
     
     if(index.integerValue == 0){
     

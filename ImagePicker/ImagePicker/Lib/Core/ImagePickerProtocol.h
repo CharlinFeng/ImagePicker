@@ -12,10 +12,11 @@
 
 @protocol ImagePickerDelegate <NSObject>
 
+@optional
 /** 该方式不可用 */
 -(void)ImagePicker_isSourceTypeAvailable;
 
-
+@required
 /** 选取结束 */
 -(void)ImagePicker_didFinishPickerImages:(NSArray <UIImage *>*)images;
 
