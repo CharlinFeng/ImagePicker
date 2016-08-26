@@ -37,7 +37,7 @@
     if(index.integerValue == 1) sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     
     if (![UIImagePickerController isSourceTypeAvailable: sourceType]){
-        CoreSVPError(@"设备不支持")
+        CoreSVPError(@"设备不支持", nil)
         if([self.delegate respondsToSelector:@selector(ImagePicker_isSourceTypeAvailable)]){[self.delegate ImagePicker_isSourceTypeAvailable]; return;}
     }
     

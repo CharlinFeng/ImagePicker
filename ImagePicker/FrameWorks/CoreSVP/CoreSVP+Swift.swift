@@ -1,14 +1,14 @@
+////
+////  CoreSVP+Swift.swift
+////  CoreSVP
+////
+////  Created by 冯成林 on 15/9/18.
+////  Copyright (c) 2015年 muxi. All rights reserved.
+////
 //
-//  CoreSVP+Swift.swift
-//  CoreSVP
+//import Foundation
 //
-//  Created by 冯成林 on 15/9/18.
-//  Copyright (c) 2015年 muxi. All rights reserved.
 //
-
-import Foundation
-
-
 ///** 成功 */
 //func CoreSVPSuccess(msg: String,completeClosure:(()->())!){
 //    
@@ -20,15 +20,17 @@ import Foundation
 ///** 失败 */
 //func CoreSVPError(msg: String,completeClosure:(()->())!){
 //    
-//    CoreSVP.showSVPWithType(CoreSVPTypeSuccess, msg: msg, duration: 2, allowEdit: false, beginBlock: nil) { () -> Void in
+//    CoreSVP.showSVPWithType(CoreSVPTypeError, msg: msg, duration: 2, allowEdit: false, beginBlock: nil) { () -> Void in
 //        completeClosure?()
 //    }
 //}
 //
-///** 进度 */
-//func CoreSVPLoading(msg: String){
+///** 注意 */
+//func CoreSVPWarning(msg: String,completeClosure:(()->())!){
 //    
-//    CoreSVP.showSVPWithType(CoreSVPTypeLoadingInterface, msg: msg, duration: 0, allowEdit: false, beginBlock: nil, completeBlock: nil)
+//    CoreSVP.showSVPWithType(CoreSVPTypeInfo, msg: msg, duration: 2, allowEdit: false, beginBlock: nil) { () -> Void in
+//        completeClosure?()
+//    }
 //}
 //
 //
@@ -39,12 +41,15 @@ import Foundation
 //        completeClosure?()
 //    }
 //}
-
-
-
-
-
-
-
-
-
+//
+///** 进度 */
+//func CoreSVPLoading(msg: String, url: String){
+//    
+//    CoreSVP.showSVPLoadingWithMsg(msg, url: url)
+//}
+//
+//
+//
+///**  消失  */
+//func CoreSVPDismiss(){ CoreSVP.dismiss() }
+//func CoreSVPDismissDelay(delay: NSTimeInterval){CoreSVP.dismiss(delay)}

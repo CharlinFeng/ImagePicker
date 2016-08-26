@@ -13,6 +13,8 @@
 #import "SVProgressHUD.h"
 #import "SVIndefiniteAnimatedView.h"
 #import <QuartzCore/QuartzCore.h>
+#import "CoreSVP.h"
+
 
 NSString * const SVProgressHUDDidReceiveTouchEventNotification = @"SVProgressHUDDidReceiveTouchEventNotification";
 NSString * const SVProgressHUDDidTouchDownInsideNotification = @"SVProgressHUDDidTouchDownInsideNotification";
@@ -62,7 +64,10 @@ static NSTimeInterval durationTime;
 @property (nonatomic, readonly) CGFloat visibleKeyboardHeight;
 @property (nonatomic, assign) UIOffset offsetFromCenter;
 
-@property (nonatomic,copy) void(^CompleteBlock) ();
+@property (nonatomic,assign) UIButton *offBtn;
+@property (nonatomic,assign) BOOL isProgress;
+@property (nonatomic,copy) NSString *url;
+
 
 - (void)showProgress:(float)progress status:(NSString*)string maskType:(SVProgressHUDMaskType)hudMaskType;
 - (void)showImage:(UIImage*)image status:(NSString*)status duration:(NSTimeInterval)duration maskType:(SVProgressHUDMaskType)hudMaskType;
@@ -179,6 +184,7 @@ static NSTimeInterval durationTime;
 }
 
 + (void)showProgress:(float)progress status:(NSString *)status maskType:(SVProgressHUDMaskType)maskType {
+    
     [[self sharedView] showProgress:progress status:status maskType:maskType];
 }
 
@@ -259,7 +265,7 @@ static NSTimeInterval durationTime;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
-		self.userInteractionEnabled = NO;
+		self.userInteractionEnabled = YES;
         self.backgroundColor = [UIColor clearColor];
 		self.alpha = 0.0f;
         _activityCount = 0;
@@ -744,7 +750,7 @@ static NSTimeInterval durationTime;
         self.accessibilityLabel = string;
         self.isAccessibilityElement = YES;
     } else {
-        self.overlayView.userInteractionEnabled = NO;
+        self.overlayView.userInteractionEnabled = YES;
         self.hudView.accessibilityLabel = string;
         self.hudView.isAccessibilityElement = YES;
     }
@@ -759,6 +765,8 @@ static NSTimeInterval durationTime;
 - (void)dismiss {
     
     if(![SVProgressHUD isVisible]) return;
+    
+    [self offBtnDidmiss];
     
     NSDictionary *userInfo = [self notificationUserInfo];
     [[NSNotificationCenter defaultCenter] postNotificationName:SVProgressHUDWillDisappearNotification
@@ -810,10 +818,6 @@ static NSTimeInterval durationTime;
                              //NSLog(@"keyWindow = %@", [UIApplication sharedApplication].keyWindow);
                          }
                      }];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if(self.CompleteBlock != nil) _CompleteBlock();
-    });
 }
 
 
@@ -923,7 +927,7 @@ static NSTimeInterval durationTime;
         _hudView = [[UIView alloc] initWithFrame:CGRectZero];
         _hudView.backgroundColor = SVProgressHUDBackgroundColor;
         _hudView.layer.cornerRadius = SVProgressHUDCornerRadius;
-        _hudView.layer.masksToBounds = YES;
+//        _hudView.layer.masksToBounds = YES;
 
         _hudView.autoresizingMask = (UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin |
                                      UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin);
@@ -941,6 +945,32 @@ static NSTimeInterval durationTime;
             effectGroup.motionEffects = @[effectX, effectY];
             [_hudView addMotionEffect:effectGroup];
         }
+        
+        /** 添加背景视图 */
+        UIView *bgView = nil;
+        if([UIDevice currentDevice].systemVersion.floatValue >= 8.0){
+        
+            UIBlurEffectStyle style = isNightMode ? UIBlurEffectStyleExtraLight : UIBlurEffectStyleDark;
+            UIBlurEffect *effect = [UIBlurEffect effectWithStyle:style];
+            UIVisualEffectView *v = [[UIVisualEffectView alloc] initWithEffect:effect];
+            bgView = v;
+        }else {
+        
+            UIToolbar *toolBar = [[UIToolbar alloc] init];
+            UIBarStyle style = isNightMode ? UIBarStyleDefault : UIBarStyleBlack;
+            toolBar.barStyle = style;
+            bgView = toolBar;
+        }
+        
+        [_hudView addSubview:bgView];
+        
+        bgView.translatesAutoresizingMaskIntoConstraints = NO;
+        NSDictionary *views = NSDictionaryOfVariableBindings(bgView);
+        NSArray *c_h = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[bgView]-0-|" options:0 metrics:nil views:views];
+        NSArray *c_v = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[bgView]-0-|" options:0 metrics:nil views:views];
+        [_hudView addConstraints:c_h];
+        [_hudView addConstraints:c_v];
+        
     }
     
     if(!_hudView.superview)
@@ -1004,16 +1034,84 @@ static NSTimeInterval durationTime;
 }
 
 
+-(UIButton *)offBtn {
+
+    if(_offBtn == nil){
+    
+        _offBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        
+        [_offBtn setImage:[UIImage imageNamed:@"SVP.bundle/red"] forState:UIControlStateNormal];
+        
+        [_offBtn addTarget:self action:@selector(btnClick) forControlEvents:UIControlEventTouchUpInside];
+        _offBtn.frame = CGRectMake(-12, -12, 24, 24);
+    }
+    
+    return _offBtn;
+}
+
+
+-(void)btnClick{
+
+    //发通知
+    [[NSNotificationCenter defaultCenter] postNotificationName:SVProgressHUDURLNoti object:nil userInfo:@{SVProgressHUDURLNoti: self.url}];
+    
+    [self dismiss];
+}
+
+-(void)offBtnDidmiss{
+    
+    [self.offBtn removeFromSuperview];
+    self.offBtn = nil;
+    if(self.isProgress){self.url = nil;}
+}
+
++ (void)isProgressRes:(BOOL)res{
+    
+    SVProgressHUD *hud = [self sharedView];
+
+    hud.isProgress = res;
+    
+    if(res){
+        
+        [hud.hudView addSubview:hud.offBtn];
+        
+    }else {
+        
+        [hud offBtnDidmiss];
+    }
+    
+    
+}
+
+
+
+
+
 
 /** 对HUB进行扩展 */
 +(void)setDuration:(NSTimeInterval)duration{
     durationTime = duration;
 }
 
-/** 完成时回调 */
-+(void)setCompleteBlock:(void(^)())completeBlock{
-    [self sharedView].CompleteBlock = completeBlock;
++(void)setURL:(NSString *)url{
+
+    SVProgressHUD *hud = [self sharedView];
+    hud.url = url;
 }
+
+-(UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
+    
+    if (!self.isProgress) {return [super hitTest:point withEvent:event];}
+
+    CGPoint hitPoint = [self.offBtn convertPoint:point fromView:self];
+    
+    if ([self.offBtn pointInside:hitPoint withEvent:event]){
+        return self.offBtn;
+    }
+    
+    return [super hitTest:point withEvent:event];
+}
+
 
 
 @end
