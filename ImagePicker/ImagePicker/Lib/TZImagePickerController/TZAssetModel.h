@@ -12,6 +12,7 @@
 typedef enum : NSUInteger {
     TZAssetModelMediaTypePhoto = 0,
     TZAssetModelMediaTypeLivePhoto,
+    TZAssetModelMediaTypePhotoGif,
     TZAssetModelMediaTypeVideo,
     TZAssetModelMediaTypeAudio
 } TZAssetModelMediaType;
@@ -39,4 +40,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger count;       ///< Count of photos the album contain
 @property (nonatomic, strong) id result;             ///< PHFetchResult<PHAsset> or ALAssetsGroup<ALAsset>
 
+@property (nonatomic, strong) NSArray *models;
+@property (nonatomic, strong) NSArray *selectedModels;
+@property (nonatomic, assign) NSUInteger selectedCount;
 @end
